@@ -1,9 +1,11 @@
 package spittr.config;
 
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 import spittr.web.WebConfig;
 
+@Configuration
 public class SpitterWebInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
   
   @Override
