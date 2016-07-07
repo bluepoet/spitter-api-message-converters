@@ -1,6 +1,7 @@
 package spittr.api
 
 import com.google.gson.Gson
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
@@ -8,9 +9,9 @@ import spittr.Spittle
 import spittr.data.SpittleRepository
 import spock.lang.Specification
 
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 /**
@@ -54,14 +55,20 @@ class SpittleApiControllerTest extends Specification {
         def gson = new Gson()
         def json = gson.toJson(spittle, Spittle.class)
 
-        spittleRepository.save(spittle) >> spittle
+        print json
+
+        spittleRepository.save(_) >> spittle
 
         when:
         def response = mockMvc.perform(post("/spittles")
-                .contentType(MediaType.APPLICATION_JSON).content(json))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(json))
                 .andDo(print())
                 .andReturn()
+
         then:
-        response.getResponse().getHeaderValue(Location) == "/spittles/1"
+        response.getResponse().getHeaderValue("Location") == "/spittles/1"
+        response.getResponse().getStatus() == HttpStatus.CREATED.value()
     }
 }
